@@ -6,7 +6,7 @@ app.use(express.json());
 app.get('/User', (req, res) => {
     res.status(200);
     res.send("Pruebas para consumo de la api")
-    console.log("entraron")
+    console.log("gay angel")
 });
 
 app.listen(PORT, (error) =>
