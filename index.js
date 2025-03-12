@@ -2,6 +2,7 @@ const { constants } = require('buffer');
 const express = require('express');
 const { Client } = require('pg');
 const app = express();
+const API_KEY = "AIzaSyCkPuDJRnH8fNOVAwu1i5Pu_CJrt_TwAco"; 
 const PORT = 4000;
 app.use(express.json());
 
@@ -47,5 +48,32 @@ client.query(query, (err, res) => {
         });
 
     client.end();
+});
+
+app.get('/api/ruta', async (req, res) => {
+    try {
+        const { origen, destino } = req.query;
+
+        const url = `https://routes.googleapis.com/directions/v2:computeRoutes?key=${API_KEY}`;
+        const response = await axios.post(url, {
+            origin: {
+                location: { latLng: { latitude: parseFloat(origen.split(',')[0]), longitude: parseFloat(origen.split(',')[1]) } }
+            },
+            destination: {
+                location: { latLng: { latitude: parseFloat(destino.split(',')[0]), longitude: parseFloat(destino.split(',')[1]) } }
+            },
+            travelMode: "DRIVE"
+        }, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        res.json(response.data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
 
