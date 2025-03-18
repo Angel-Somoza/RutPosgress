@@ -1,18 +1,20 @@
+console.clear();
 const { constants } = require('buffer');
 const express = require('express');
 const { Client } = require('pg');
 const app = express();
-const API_KEY = "AIzaSyCkPuDJRnH8fNOVAwu1i5Pu_CJrt_TwAco"; 
-const query = 'SELECT * FROM ruta'
+const API_KEY = "AIzaSyAW8hX4eFHiokYjCGSHtYZgTyMXXeXreoY"; // si no funciona notificarse conmigo
+const query = 'SELECT * FROM datos_carro'
 const PORT = 4000;
+const axios = require('axios');
 app.use(express.json());
 
 const client  = new Client( {
     user: 'postgres',       // Usuario default si es diferente cambiarlo
     host: 'localhost',      // Servidor donde está la base de datos (en este caso, default si es necesario cambiarlo)
-    database: 'Ruta',       // Nombre de la base de datos a la que se quiere conectar si es necesario cambiarla
-    password: '',       // Contraseña del usuario de PostgreSQL
-    port: 3000,             // Puerto en el que se intenta conectar el default es el 5432(esto es un posible error)
+    database: '',    // Nombre de la base de datos a la que se quiere conectar si es necesario cambiarla
+    password: '',            // Contraseña del usuario de PostgreSQL
+    port: 5432,             // Puerto en el que se intenta conectar el default es el 5432(esto es un posible error)
 });
 
 client.connect()
@@ -45,23 +47,28 @@ client.query(query, (err, res) => {
 
 app.get('/api/ruta', async (req, res) => {
     try {
-        const { origen, destino } = req.query;
+        const {origin, destination } = req.query;
 
-        const url = `https://routes.googleapis.com/directions/v2:computeRoutes?key=${API_KEY}`;
+        if (!origin || !destination) {
+            return res.status(400).json({ error: "Parametros de origen y destino son requeridos" });
+        }
+
+        const [latorigin, lngorigin] = origin.split(',').map(Number);//traformamos las coordenadas de la url en string, ademas se le quitan las comas
+        const [latdestination, lngdestination] = destination.split(',').map(Number);
+
+        if (isNaN(latorigin) || isNaN(lngorigin) || isNaN(latdestination) || isNaN(lngdestination)) {//se verifica si no es un numero
+            return res.status(400).json({ error: "Formato de coordenadas invalidos'." });
+        }
+        const url = `https://routes.googleapis.com/directions/v2:computeRoutes?key=${API_KEY}`; 
         const response = await axios.post(url, {
-            origin: {
-                location: { latLng: { latitude: parseFloat(origen.split(',')[0]), longitude: parseFloat(origen.split(',')[1]) } }
-            },
-            destination: {
-                location: { latLng: { latitude: parseFloat(destino.split(',')[0]), longitude: parseFloat(destino.split(',')[1]) } }
-            },
+            origin: { location: { latLng: { latitude: latorigin, longitude: lngorigin } } },
+            destination: { location: { latLng: { latitude: latdestination, longitude: lngdestination } } },
             travelMode: "DRIVE"
-        }, {
-            headers: { 'Content-Type': 'application/json' }
-        });
-
+        },{ headers: {
+            'Content-Type': 'application/json',
+            'X-Goog-FieldMask': 'routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline'}});
         res.json(response.data);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(error.response?.status || 500).json({ error: error.response?.data || error.message });
     }
 });
