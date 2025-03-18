@@ -1,3 +1,4 @@
+console.clear();
 const { constants } = require('buffer');
 const express = require('express');
 const { Client } = require('pg');
