@@ -1,0 +1,42 @@
+const authService = require('../Logic/login');
+
+class AuthController {
+    
+    // Login de usuario
+    async login(req, res) {
+        try {
+
+            const { usuario, password } = req.body;
+
+            const userData = await authService.login(usuario, password);
+
+            const response = {
+                success: true,
+                message: "Login exitoso",
+                user: userData  
+            };
+
+            res.status(200).json(response);
+            console.log('Login completado exitosamente');
+
+        } catch (error) {
+            console.error('Error en AuthController.login:', error.message);
+
+            let statusCode = 500;
+            if (error.message.includes('requeridos') || error.message.includes('vacíos')) {
+                statusCode = 400;
+            } else if (error.message.includes('Credenciales incorrectas')) {
+                statusCode = 401; 
+            }
+
+            res.status(statusCode).json({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+
+  
+}
+
+module.exports = new AuthController();
