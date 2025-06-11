@@ -28,6 +28,17 @@ class UserRepository {
         }
     }
 
+  async createUser(userData) {//funcion para crear el usuario 
+        try {
+            const query = 'INSERT INTO usuario (usuario, contraseña) VALUES ($1, $2) RETURNING id, usuario'; //query a utilizar par la insercion en la base de datos
+            const result = await database.query(query, [userData.usuario, userData.contraseña]);//esperamos la query, con los parametos de usaurio y contrasena
+            return result.rows[0];
+        } catch (error) {// manejo de erroes
+            console.error('Error al crear usuario:', error);
+            throw error;
+        }
+    }
+
 }
 
 module.exports = new UserRepository();

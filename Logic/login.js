@@ -48,6 +48,48 @@ class AuthService {
             throw error; 
         }
     }
+    // manejo de la funcion resgister
+      async register(usuario, password) {//con dos parametros
+        try {
+            //espera la funcion para validar las credenciales si son o no vacias
+            await this.validateCredentials(usuario, password);
+
+            // Validacion para que el usuario tenga almenos 8 caracteres 
+            if (usuario.length < 8) {
+                throw new Error('El usuario debe tener al menos 8 caracteres');
+            }
+            // Validacion para que el contrasena tenga almenos 8 caracteres 
+            if (password.length < 8) {
+                throw new Error('La contraseña debe tener al menos 8 caracteres');
+            }
+
+            // Verificar si el usuario ya existe
+            const userExists = await userRepository.exists(usuario);
+            if (userExists) {
+                throw new Error('El usuario ya existe');
+            }
+
+            // Crear el nuevo usuario
+            const userData = {
+                usuario: usuario,
+                contraseña: password
+            };
+
+            const newUser = await userRepository.createUser(userData);//esperamos la fucion que crea el usuario
+
+            const responseData = {
+                id: newUser.id,
+                usuario: newUser.usuario
+            };
+
+            console.log(`Registro exitoso para usuario: ${usuario}`);
+            return responseData;
+
+        } catch (error) {
+            console.error('Error en registro:', error.message);
+            throw error;
+        }
+    }
 
     async userExists(username) {
         try {
