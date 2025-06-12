@@ -184,12 +184,12 @@ class RouteTrafficService {
         }
     }
 
-    async updateRoute(nombreRuta, newOrigin, newDestination) {
-        return await userRepository.updateRoute(nombreRuta, newOrigin, newDestination);
+    async updateRoute(id, newOrigin, newDestination) {
+        return await userRepository.updateRoute(id, newOrigin, newDestination);
     }
 
-    async deleteRoute(nombreRuta) {
-        return await userRepository.deleteRoute(nombreRuta);
+    async deleteRoute(id) {
+        return await userRepository.deleteRoute(id);
     }
 
     async getAllRoutes() {
