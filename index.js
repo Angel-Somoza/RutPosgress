@@ -25,33 +25,6 @@ app.use(express.json());
 
     app.use('/api/', authRoutes);// app use, para usar los controladores
 
-    app.get('/api/ruta', async (req, res) => {
-        try {
-            const {origin, destination } = req.query;
-
-            if (!origin || !destination) {
-                return res.status(400).json({ error: "Parametros de origen y destino son requeridos" });
-            }
-
-            const [latorigin, lngorigin] = origin.split(',').map(Number);//traformamos las coordenadas de la url en string, ademas se le quitan las comas
-            const [latdestination, lngdestination] = destination.split(',').map(Number);
-
-            if (isNaN(latorigin) || isNaN(lngorigin) || isNaN(latdestination) || isNaN(lngdestination)) {//se verifica si no es un numero
-                return res.status(400).json({ error: "Formato de coordenadas invalidos'." });
-            }
-            const url = `https://routes.googleapis.com/directions/v2:computeRoutes?key=${API_KEY}`; 
-            const response = await axios.post(url, {
-                origin: { location: { latLng: { latitude: latorigin, longitude: lngorigin } } },
-                destination: { location: { latLng: { latitude: latdestination, longitude: lngdestination } } },
-                travelMode: "DRIVE"
-            },{ headers: {
-                'Content-Type': 'application/json',
-                'X-Goog-FieldMask': 'routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline'}});
-            res.json(response.data);
-        } catch (error) {
-            res.status(error.response?.status || 500).json({ error: error.response?.data || error.message });
-        }
-    });
 
 
     app.get('/api/traffic', async (req, res) => {

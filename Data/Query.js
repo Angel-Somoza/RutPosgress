@@ -38,6 +38,64 @@ class UserRepository {
             throw error;
         }
     }
+    //___________________________________query para rutas_______________________________________________
+    async createRoute(nombreRuta, origin, destination) {
+        try {
+            const query = 'INSERT INTO rutas (nombre_ruta, origin, destination) VALUES ($1, $2, $3) RETURNING *';//se crea el query para insertar rutas 
+            const result = await database.query(query, [nombreRuta, origin, destination]);// se espera el query y se le asigan los parametros 
+            return result.rows[0]; //retornamos el objeto en especifico del arreglo
+        } catch (error) {
+            console.error('Error al crear ruta:', error);// manejo de errores
+            throw error;
+        }
+    }
+    // Obtener todas las rutas
+    async getAllRoutes() {
+        try {
+            const query = 'SELECT * FROM rutas ORDER BY nombre_ruta';// query para obtner las rutas por medio de nombre 
+            const result = await database.query(query);// se esoera la query 
+            return result.rows; // se retorna todo los resultados 
+        } catch (error) {
+            console.error('Error al obtener rutas:', error);// control de errores 
+            throw error;
+        }
+    }
+//actualizar rutas
+     async updateRoute(nombreRuta, newOrigin, newDestination) {
+        try {
+            const query = 'UPDATE rutas SET origin = $2, destination = $3 WHERE nombre_ruta = $1 RETURNING *';// se crea el query en este caso un update
+            const result = await database.query(query, [nombreRuta, newOrigin, newDestination]);// se le agrega los parametros
+            return result.rows[0] || null; // retorna 1 dato del arreglo o puede retornadar null
+        } catch (error) {
+            console.error('Error al actualizar ruta:', error);// manejo de errores
+            throw error;
+        }
+
+    }
+    //borrar rutas
+     async deleteRoute(nombreRuta) {
+        try {
+            const query = 'DELETE FROM rutas WHERE nombre_ruta = $1 RETURNING *';// se declara el query con un delete y filtro
+            const result = await database.query(query, [nombreRuta]);// le agregamos parametro
+            return result.rows[0] || null;//puede retonar un valor o null
+        } catch (error) {
+            console.error('Error al eliminar ruta:', error);//manejo de erroes 
+            throw error;
+        }
+    }
+
+    // NUEVO: Obtener ruta por nombre
+    async getRouteByName(nombreRuta) {//funcion para obtener el nombre de la ruta
+        try {
+            const query = 'SELECT * FROM rutas WHERE nombre_ruta = $1';//query para obtener el nombre y flitro 
+            const result = await database.query(query, [nombreRuta]);// se espera el query y ase agrega parametros
+            return result.rows[0] || null;// retorna ese valor o null 
+        } catch (error) {
+            console.error('Error al buscar ruta:', error);// manejo de erroes
+            throw error;
+        }
+    }
+
 
 }
 

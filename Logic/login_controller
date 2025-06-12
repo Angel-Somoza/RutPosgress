@@ -1,4 +1,4 @@
-const authService = require('../Logic/login');
+const authService = require('../Logic/UserRepository');
 
 class AuthController {
     
