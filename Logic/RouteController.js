@@ -109,7 +109,7 @@ class RouteController {
     // Actualizar ruta
     async updateRoute(req, res) {
         try {
-            const { nombre } = req.params;
+            const { id  } = req.params;
             const { origin, destination } = req.body;
             
             if (!origin || !destination) {
@@ -118,8 +118,14 @@ class RouteController {
                     error: "Origen y destino son requeridos"
                 });
             }
-
-            const route = await routeTrafficService.updateRoute(nombre, origin, destination);
+            
+            if (isNaN(id)) {
+                return res.status(400).json({
+                    success: false,
+                    error: "ID debe ser un número válido"
+                });
+            }
+            const route = await routeTrafficService.updateRoute(id , origin, destination);
             
             if (!route) {
                 return res.status(404).json({
@@ -145,11 +151,18 @@ class RouteController {
     }
 
     // Eliminar ruta
-    async deleteRoute(req, res) {
+   async deleteRoute(req, res) {
         try {
-            const { nombre } = req.params;
+            const { id } = req.params;  
             
-            const deleted = await routeTrafficService.deleteRoute(nombre);
+            if (isNaN(id)) {
+                return res.status(400).json({
+                    success: false,
+                    error: "ID debe ser un número válido"
+                });
+            }
+            
+            const deleted = await routeTrafficService.deleteRoute(parseInt(id));
             
             if (!deleted) {
                 return res.status(404).json({
@@ -173,5 +186,6 @@ class RouteController {
         }
     }
 }
+
 
 module.exports = new RouteController();

@@ -61,10 +61,10 @@ class UserRepository {
         }
     }
 //actualizar rutas
-     async updateRoute(nombreRuta, newOrigin, newDestination) {
+     async updateRoute(id, newOrigin, newDestination) {
         try {
-            const query = 'UPDATE rutas SET origin = $2, destination = $3 WHERE nombre_ruta = $1 RETURNING *';// se crea el query en este caso un update
-            const result = await database.query(query, [nombreRuta, newOrigin, newDestination]);// se le agrega los parametros
+            const query = 'UPDATE rutas SET origin = $2, destination = $3 WHERE id = $1 RETURNING *';// se crea el query en este caso un update
+             const result = await database.query(query, [id, newOrigin, newDestination]);// se le agrega los parametros
             return result.rows[0] || null; // retorna 1 dato del arreglo o puede retornadar null
         } catch (error) {
             console.error('Error al actualizar ruta:', error);// manejo de errores
@@ -73,10 +73,10 @@ class UserRepository {
 
     }
     //borrar rutas
-     async deleteRoute(nombreRuta) {
+     async deleteRoute(id) {
         try {
-            const query = 'DELETE FROM rutas WHERE nombre_ruta = $1 RETURNING *';// se declara el query con un delete y filtro
-            const result = await database.query(query, [nombreRuta]);// le agregamos parametro
+            const query = 'DELETE FROM rutas WHERE id = $1 RETURNING *';// se declara el query con un delete y filtro
+            const result = await database.query(query, [id]);// le agregamos parametro
             return result.rows[0] || null;//puede retonar un valor o null
         } catch (error) {
             console.error('Error al eliminar ruta:', error);//manejo de erroes 

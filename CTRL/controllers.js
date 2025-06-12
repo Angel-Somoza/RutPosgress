@@ -14,9 +14,9 @@ router.get('/routes', routeController.getAllRoutes);
 //endpoint para insetar rutas
 router.post('/routes', routeController.createRoute);
 //endpoint para actualizar nombre
-router.put('/routes/:nombre', routeController.updateRoute);
+router.put('/routes/:id', routeController.updateRoute);
 //endpoint para borrar nombre
-router.delete('/routes/:nombre', routeController.deleteRoute);
+router.delete('/routes/:id', routeController.deleteRoute);
 //endpoint trafico
 router.get('/routes/traffic', routeController.getAllRoutesWithTraffic);
 router.get('/routes/traffic/:nombre', routeController.getRouteWithTraffic);
